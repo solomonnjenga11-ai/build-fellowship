@@ -1,0 +1,52 @@
+# QuantConnect / Lean Engine
+Launcher/bin/
+Launcher/obj/
+Engine/bin/
+Engine/obj/
+*.user
+*.suo
+*.cache
+*.db
+*.opendb
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data & Secrets
+*.csv
+*.h5
+*.hdf5
+data/
+*.log
+*.env
+secrets.json
+config.json
