@@ -1,38 +1,43 @@
-# Week 2 -- QuantConnect Algorithmic Trading Project
+# Week 2 -- GBPJPY SMA/ATR Algorithmic Trading Strategy
 
 ## Overview
 
-This folder contains the algorithmic trading strategy developed as part of **Week 2** of the Build Fellowship program, built and backtested on QuantConnect.
+This project implements a **GBP/JPY hourly SMA 20/50 crossover strategy** with a **2x ATR(14) volatility-adjusted stop loss**, developed for **Build Fellowship Assignment 1** on the [QuantConnect](https://www.quantconnect.com/) platform.
 
-## How to Upload Your QuantConnect Export
+The algorithm enters long positions when the fast SMA crosses above the slow SMA and enters short positions when the fast SMA crosses below. ATR is used to size the stop loss distance so the strategy adapts to market volatility.
 
-1. In QuantConnect, go to your project and click **Download Project**.
-2. 2. Extract the downloaded `.zip` file.
-   3. 3. Copy the extracted files into this `week2/quantconnect/` directory.
-      4. 4. Stage, commit, and push:
-        
-         5. ```bash
-            git add week2/quantconnect/
-            git commit -m "Add Week 2 QuantConnect project"
-            git push origin main
-            ```
+## Strategy Summary
 
-            ## Strategy Summary
+| Detail | Value |
+|---|---|
+| **Asset** | GBP/JPY (Forex) |
+| **Timeframe** | Hourly (1H) |
+| **Fast SMA** | 20-period |
+| **Slow SMA** | 50-period |
+| **Stop Loss** | 2x ATR(14) |
+| **Backtest Period** | January 2020 -- December 2024 |
+| **Starting Capital** | $100,000 |
 
-            | Detail | Value |
-            |---|---|
-            | **Asset(s)** | _e.g., GBP/JPY_ |
-            | **Timeframe** | _e.g., 1H / 4H_ |
-            | **Approach** | _e.g., SMA + ATR_ |
-            | **Backtest Period** | _TBD_ |
+## How It Works
 
-            ## Files
-
-            - `main.py` -- Primary algorithm file (from QuantConnect export)
-            - - `research.ipynb` -- Research notebook (if applicable)
-              - - Additional supporting files from QuantConnect export
-               
-                - ## Notes
-               
-                - - Update this README with your actual strategy details after uploading your project.
-                  - - Include backtest results and any performance metrics.
+1. **Signal Generation**: The algorithm monitors the SMA(20) and SMA(50) on hourly GBP/JPY data.
+2. 2. **Long Entry**: When the fast SMA crosses above the slow SMA, the algorithm enters a long position.
+   3. 3. **Short Entry**: When the fast SMA crosses below the slow SMA, the algorithm enters a short position.
+      4. 4. **Risk Management**: Each trade is protected by a stop-market order placed at 2x the 14-period ATR from the entry price, adapting to current market volatility.
+         5. 5. **Position Management**: Before entering a new trade, any existing stop order is cancelled and replaced.
+           
+            6. ## Files
+           
+            7. - `main.py` -- Core algorithm with Initialize() and OnData() methods
+               - - `README.md` -- This file
+                
+                 - ## Tech Stack
+                
+                 - - **Platform**: QuantConnect / Lean Engine
+                   - - **Language**: Python
+                     - - **Indicators**: SMA (Simple Moving Average), ATR (Average True Range)
+                       - - **Order Types**: Market Orders, Stop Market Orders
+                        
+                         - ## Built For
+                        
+                         - Build Fellowship -- Assignment 1: Modified Moving Average Strategy with Risk Management
