@@ -123,5 +123,5 @@ The link is stored in:
 - `screenshots/` — Backtest results  
 - `link_to_app.txt` — Gemini app link  
 
-This completes the Week 3 assignment.
+End of Week 3 assignment.
 
