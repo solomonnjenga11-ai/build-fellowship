@@ -1,6 +1,6 @@
 # 📘 **WEEK 4 — Strategy Improvements & Optimization**  
 ### *Build Fellowship — GBP/JPY Algorithmic Trading Strategy*  
-### *Author: Solomon Mwangi*
+### *Author: Solomon Njenga*
 
 ---
 
