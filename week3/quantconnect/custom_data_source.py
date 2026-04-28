@@ -3,7 +3,7 @@ from AlgorithmImports import *
 class GbpJpyCustomData(PythonData):
     def GetSource(self, config, date, isLiveMode):
         return SubscriptionDataSource(
-            "https://raw.githubusercontent.com/solomonnjenga11-ai/build-fellowship/main/week3/gbpjpy_data.csv",
+            "https://raw.githubusercontent.com/solomonnjenga11-ai/build-fellowship/refs/heads/main/week3/gbpjpy_data.csv",
             SubscriptionTransportMedium.RemoteFile
         )
 
@@ -15,11 +15,20 @@ class GbpJpyCustomData(PythonData):
         obj = GbpJpyCustomData()
         obj.Symbol = config.Symbol
 
+        # CSV format: Date,Close,High,Low,Open,Volume
         obj.Time = datetime.strptime(data[0], "%Y-%m-%d")
-        obj.Value = float(data[4])  # Close price
-        obj["Open"] = float(data[1])
-        obj["High"] = float(data[2])
-        obj["Low"] = float(data[3])
-        obj["Close"] = float(data[4])
+        close = float(data[1])
+        high = float(data[2])
+        low = float(data[3])
+        open_ = float(data[4])
+        volume = float(data[5])
+
+        obj.Value = close
+
+        obj["Open"] = open_
+        obj["High"] = high
+        obj["Low"] = low
+        obj["Close"] = close
+        obj["Volume"] = volume
 
         return obj
