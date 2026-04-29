@@ -1,72 +1,70 @@
-Hybrid FX Trading System
-A multi‑signal hybrid forex trading system that fuses technical analysis, machine learning, Hidden Markov Model regime detection, macroeconomic sentiment, and an LLM‑style decision layer into a unified strategy for GBP/JPY on the daily timeframe. The system features an end‑to‑end pipeline — from data acquisition through model training, signal orchestration, backtesting, and performance visualization.
+# Hybrid FX Trading System
 
-Table of Contents
-Project Overview
+A multi-signal hybrid forex trading system that fuses technical analysis, machine learning, Hidden Markov Model regime detection, macroeconomic sentiment, and an LLM-style decision layer into a unified strategy for GBP/JPY on the daily timeframe. The system features an end-to-end pipeline — from data acquisition through model training, signal orchestration, backtesting, and performance visualization.
 
-Architecture
+---
 
-Folder Structure
+## Table of Contents
 
-Data Pipeline
+- [Project Overview](#project-overview)
+- [Architecture](#architecture)
+- [Folder Structure](#folder-structure)
+- [Data Pipeline](#data-pipeline)
+- [Model Training](#model-training)
+- [Orchestrator Logic](#orchestrator-logic)
+- [Backtest Engine](#backtest-engine)
+- [Performance Metrics](#performance-metrics)
+- [Visualizations](#visualizations)
+- [How to Run](#how-to-run)
+- [Future Improvements](#future-improvements)
+- [LLM & Macro Clarification](#llm--macro-clarification)
+- [License](#license)
 
-Model Training
+---
 
-Orchestrator Logic
+## Project Overview
 
-Backtest Engine
+**Hybrid FX System** is a quantitative trading framework that takes a *multi-brain* approach to forex trading. Instead of relying on a single model or indicator, it layers five independent signal sources — each capturing a different dimension of market behavior — and merges them through a central orchestrator to produce high-conviction trade decisions.
 
-Performance Metrics
+### Key Highlights
 
-Visualizations
+| Capability | Description |
+|-----------|-------------|
+| **5-Signal Fusion** | SMA/ATR technicals, HMM regime detection, ML probability filter, macro sentiment, and an LLM-style reasoning layer |
+| **Regime Awareness** | A Hidden Markov Model classifies the market into latent regimes (trending, ranging, volatile) |
+| **LLM-Ready Architecture** | The system includes an LLM decision module; in the MVP, this is implemented as a deterministic rule-based proxy |
+| **Macro Overlay** | Lightweight macro sentiment loaded from JSON (rate stance, employment strength) |
+| **Full Backtest Pipeline** | Vectorized simulation with trade logging, equity tracking, and Excel export |
+| **Automated Visualization** | Equity curves, drawdowns, regime overlays, and ML probability distributions |
 
-How to Run
+### Target Instrument
 
-Future Improvements
+- **Pair:** GBP/JPY  
+- **Timeframe:** Daily (D1)
 
-LLM & Macro Clarification
+---
 
-License
+## Architecture
 
-Project Overview
-Hybrid FX System is a quantitative trading framework that takes a multi‑brain approach to forex trading. Instead of relying on a single model or indicator, it layers five independent signal sources — each capturing a different dimension of market behavior — and merges them through a central orchestrator to produce high‑conviction trade decisions.
-
-Key Highlights
-Capability	Description
-5‑Signal Fusion	SMA/ATR technicals, HMM regime detection, ML probability filter, macro sentiment, and an LLM‑style reasoning layer
-Regime Awareness	A Hidden Markov Model classifies the market into latent regimes (trending, ranging, volatile)
-LLM‑Ready Architecture	The system includes an LLM decision module; in the MVP, this is implemented as a deterministic rule‑based proxy
-Macro Overlay	Lightweight macro sentiment loaded from JSON (rate stance, employment strength)
-Full Backtest Pipeline	Vectorized simulation with trade logging, equity tracking, and Excel export
-Automated Visualization	Equity curves, drawdowns, regime overlays, and ML probability distributions
-
-
-Target Instrument
-Pair: GBP/JPY
-
-Timeframe: Daily (D1)
-
-Architecture
-Code
+```
 DATA → MODELS → SIGNALS → ORCHESTRATOR → LLM DECISION → BACKTEST → ANALYSIS
+```
+
 A modular, extensible pipeline:
 
-Data Layer → Clean OHLCV data
+- **Data Layer** → Clean OHLCV data  
+- **Model Training** → HMM + ML classifier  
+- **Strategy Signals** → SMA/ATR, HMM regime, ML probability, macro sentiment  
+- **Orchestrator** → Merges all signals  
+- **LLM Decision Layer** → Final trade judgment  
+- **Backtest Engine** → Vectorized simulation  
+- **Analysis** → Charts + metrics  
 
-Model Training → HMM + ML classifier
+---
 
-Strategy Signals → SMA/ATR, HMM regime, ML probability, macro sentiment
+## Folder Structure
 
-Orchestrator → Merges all signals
-
-LLM Decision Layer → Final trade judgment
-
-Backtest Engine → Vectorized simulation
-
-Analysis → Charts + metrics
-
-Folder Structure
-Code
+```
 hybrid_fx_system/
 │
 ├── analysis/
@@ -108,113 +106,144 @@ hybrid_fx_system/
 ├── download_data.py
 ├── train_models.py
 └── README.md
-Data Pipeline
-Stage 1 — Data Acquisition
-download_data.py fetches historical GBP/JPY OHLCV data and stores it in data/processed/gbpjpy_D1.csv.
+```
 
-Stage 2 — Feature Engineering
+---
+
+## Data Pipeline
+
+### Stage 1 — Data Acquisition
+
+`download_data.py` fetches historical GBP/JPY OHLCV data and stores it in `data/processed/gbpjpy_D1.csv`.
+
+### Stage 2 — Feature Engineering
+
 Features are computed inside strategy modules:
 
-Module	Features
-sma_atr.py	SMA20/50, ATR14
-hmm_regime.py	Returns + rolling volatility
-ml_filter.py	Direction labels + ML features
-macro_sentiment.py	Macro sentiment from JSON
+| Module | Features |
+|--------|----------|
+| sma_atr.py | SMA20/50, ATR14 |
+| hmm_regime.py | Returns + rolling volatility |
+| ml_filter.py | Direction labels + ML features |
+| macro_sentiment.py | Macro sentiment from JSON |
 
+All features use only past/present data — no look-ahead bias.
 
-All features use only past/present data — no look‑ahead bias.
+---
 
-Model Training
-Hidden Markov Model (HMM)
-Learns latent regimes from returns + volatility
+## Model Training
 
-Saved to models/hmm/hmm_model.pkl
+### Hidden Markov Model (HMM)
 
-ML Classifier (Random Forest)
-Predicts next‑day direction
+- Learns latent regimes from returns + volatility  
+- Saved to `models/hmm/hmm_model.pkl`
 
-Chronological 80/20 split
+### ML Classifier (Random Forest)
 
-Saved to models/ml/ml_model.pkl
+- Predicts next-day direction  
+- Chronological 80/20 split  
+- Saved to `models/ml/ml_model.pkl`
 
-Orchestrator Logic
+---
+
+## Orchestrator Logic
+
 The orchestrator merges five upstream signals:
 
-#	Module	Role
-1	sma_atr.py	Trend direction + volatility context
-2	hmm_regime.py	Regime classification
-3	ml_filter.py	Directional probability
-4	macro_sentiment.py	Macro alignment
-5	llm_decision.py	Final reasoning layer
+| # | Module | Role |
+|---|--------|------|
+| 1 | sma_atr.py | Trend direction + volatility context |
+| 2 | hmm_regime.py | Regime classification |
+| 3 | ml_filter.py | Directional probability |
+| 4 | macro_sentiment.py | Macro alignment |
+| 5 | llm_decision.py | Final reasoning layer |
 
+### Decision Flow
 
-Decision Flow
-Code
+```
 SMA/ATR
 HMM Regime
 ML Probability
 Macro Sentiment
         → ORCHESTRATOR → LLM DECISION → TRADE / REDUCE / AVOID
-Backtest Engine
-backtests/run_backtest.py simulates the orchestrator’s decisions:
+```
 
-Vectorized execution
+---
 
-Spread/slippage modeling
+## Backtest Engine
 
-Full trade log
+`backtests/run_backtest.py` simulates the orchestrator’s decisions:
 
-Equity curve
+- Vectorized execution  
+- Spread/slippage modeling  
+- Full trade log  
+- Equity curve  
+- Excel export  
 
-Excel export
+---
 
-Performance Metrics
-Metric	Value
-Final Equity	1.33
-Win Rate	57.52%
-Sharpe Ratio	0.46
-Max Drawdown	−5.25%
-Profit Factor	1.39
-Expectancy	0.0023
-Total Trades	130
+## Performance Metrics
 
+| Metric | Value |
+|--------|--------|
+| Final Equity | 1.33 |
+| Win Rate | 57.52% |
+| Sharpe Ratio | 0.46 |
+| Max Drawdown | −5.25% |
+| Profit Factor | 1.39 |
+| Expectancy | 0.0023 |
+| Total Trades | 130 |
 
-Visualizations
-Generated by analysis/plot_and_metrics.py:
+---
 
-Equity Curve
+## Visualizations
 
-Drawdown (%)
+Generated by `analysis/plot_and_metrics.py`:
 
-Price with Regime Overlay
+- Equity Curve  
+- Drawdown (%)  
+- Price with Regime Overlay  
+- ML Probability Distribution  
 
-ML Probability Distribution
+---
 
-How to Run
-Code
+## How to Run
+
+```
 python download_data.py
 python train_models.py
 python backtests/run_backtest.py
 python analysis/plot_and_metrics.py
-Future Improvements
-Area	Enhancement
-Multi‑Pair Expansion	Add EUR/JPY, GBP/USD, AUD/JPY
-Walk‑Forward Optimization	Rolling adaptive training
-Regime‑Adaptive Sizing	Position sizing by regime
-Advanced LLM Reasoning	Replace proxy with real LLM
-Real‑Time Macro Feed	Automated macro ingestion
-Dashboard	Streamlit monitoring
-Alerts	Email/Telegram notifications
+```
 
+---
 
-LLM & Macro Clarification
-This project includes a decision‑making layer designed to represent how a Large Language Model (LLM) would integrate multiple signals into a unified trading action. In the MVP version, this layer is implemented as a deterministic rule‑based proxy rather than a live LLM API call. The proxy combines inputs from the HMM regime classifier, Random Forest direction predictor, SMA/ATR trend structure, volatility conditions, and macro sentiment into a single score that outputs TRADE, REDUCE, or AVOID.
+## Future Improvements
 
-The macro sentiment layer is also implemented as a lightweight placeholder. Instead of pulling real economic news or calendar data, the system loads a small JSON file containing high‑level macro indicators such as interest‑rate stance and employment strength. These values default to neutral unless manually updated.
+| Area | Enhancement |
+|------|-------------|
+| Multi-Pair Expansion | Add EUR/JPY, GBP/USD, AUD/JPY |
+| Walk-Forward Optimization | Rolling adaptive training |
+| Regime-Adaptive Sizing | Position sizing by regime |
+| Advanced LLM Reasoning | Replace proxy with real LLM |
+| Real-Time Macro Feed | Automated macro ingestion |
+| Dashboard | Streamlit monitoring |
+| Alerts | Email/Telegram notifications |
 
-Although the current implementation does not call an external LLM or fetch real macroeconomic data, the architecture is fully prepared for future upgrades. A real LLM (e.g., GPT‑4) and a real macro‑data pipeline can be integrated into this module without requiring structural changes to the rest of the system.
+---
 
-License
+## LLM & Macro Clarification
+
+This project includes a decision-making layer designed to represent how a Large Language Model (LLM) would integrate multiple signals into a unified trading action. In the MVP version, this layer is implemented as a **deterministic rule-based proxy** rather than a live LLM API call. The proxy combines inputs from the HMM regime classifier, Random Forest direction predictor, SMA/ATR trend structure, volatility conditions, and macro sentiment into a single score that outputs **TRADE**, **REDUCE**, or **AVOID**.
+
+The macro sentiment layer is also implemented as a **lightweight placeholder**. Instead of pulling real economic news or calendar data, the system loads a small JSON file containing high-level macro indicators such as interest-rate stance and employment strength. These values default to *neutral* unless manually updated.
+
+Although the current implementation does not call an external LLM or fetch real macroeconomic data, the architecture is **fully prepared for future upgrades**. A real LLM (e.g., GPT-4) and a real macro-data pipeline can be integrated into this module without requiring structural changes to the rest of the system.
+
+---
+
+## License
+
 This project is for educational and research purposes. Not financial advice. Use at your own risk.
 
-Built with Python · NumPy · Pandas · Scikit‑learn · hmmlearn · Matplotli
+Built with Python · NumPy · Pandas · Scikit-learn · hmmlearn · Matplotlib
